@@ -10,6 +10,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+const resultRoutes = require("./routes/result");
+app.use("/api/results", resultRoutes);
 
 // Middleware
 app.use(cors());

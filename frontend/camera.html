@@ -2,14 +2,66 @@
 <html>
 <head>
   <title>RehabAI Camera</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f5f7fb;
+    }
+
+    h2 {
+      background: #4CAF50;
+      color: white;
+      padding: 10px;
+    }
+
+    video, canvas {
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .stats {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h2>Exercise Camera</h2>
+  <h2>🤖 RehabAI Camera</h2>
 
-  <p id="exerciseName"></p>
+  <video id="video" width="500" height="400" autoplay></video>
+  <canvas id="canvas" width="500" height="400"></canvas>
 
-  <video id="video" width="600" height="400" autoplay></video>
+  <div class="stats">
+    <h3 id="repCount">Reps: 0</h3>
+    <h3 id="feedback">Feedback: </h3>
+    <h3 id="accuracy">Accuracy: 0%</h3>
+  </div>
+
+  <button onclick="startCamera()">Start Camera</button>
+  <button onclick="saveResult()">Save Result</button>
+
+  <!-- MediaPipe -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
 
   <script src="camera.js"></script>
 

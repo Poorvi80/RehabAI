@@ -1,54 +1,36 @@
-const token = localStorage.getItem("token");
-
-if (!token) {
-  alert("Please login first");
-  window.location.href = "login.html";
-}
-
-// Fetch exercises
+// Fetch exercises from backend
 async function fetchExercises() {
   try {
-    const response = await fetch("http://localhost:5000/api/exercises", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
+    const res = await fetch("http://localhost:5000/api/exercises");
+    const data = await res.json();
+
+    const container = document.getElementById("exerciseList");
+    container.innerHTML = "";
+
+    data.forEach(ex => {
+      const div = document.createElement("div");
+      div.classList.add("card");
+
+      div.innerHTML = `
+        <h3>🏋️ ${ex.name}</h3>
+        <p>${ex.description}</p>
+        <p><b>${ex.difficulty}</b></p>
+        <button onclick="startExercise('${ex.name}')">Start</button>
+      `;
+
+      container.appendChild(div);
     });
 
-    const exercises = await response.json();
-
-    const list = document.getElementById("exerciseList");
-    list.innerHTML = "";
-
-   exercises.forEach(ex => {
-  const li = document.createElement("li");
-
-  li.innerHTML = `
-    ${ex.name} - ${ex.targetArea}
-    <button onclick="startExercise('${ex._id}')">
-      Start
-    </button>
-  `;
-
-  list.appendChild(li);
-});
-
-   function startExercise(id) {
-  console.log("Starting exercise:", id);
-  localStorage.setItem("selectedExercise", id);
-  window.location.href = "camera.html";
-}
-
-
-
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching exercises:", error);
   }
 }
 
-fetchExercises();
+// Start exercise → go to camera
+function startExercise(name) {
+  localStorage.setItem("exercise", name);
+  window.location.href = "camera.html";
+}
 
-// Logout
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
-});
+// Load exercises
+fetchExercises();
