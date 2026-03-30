@@ -8,6 +8,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const physioRoutes = require("./routes/physioRoutes");
+
+app.use("/api/physio", physioRoutes);
 
 const app = express();
 const resultRoutes = require("./routes/result");

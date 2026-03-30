@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Physiotherapists</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #e0f2fe, #bae6fd);
+      text-align: center;
+    }
+
+    nav {
+      background: #1e3a8a;
+      padding: 15px;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #1e3a8a;
+    }
+
+    .container {
+      margin: 30px auto;
+      width: 90%;
+      max-width: 900px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      margin: 10px 0;
+      color: #1e40af;
+    }
+
+    .card p {
+      margin: 5px 0;
+      color: #374151;
+    }
+
+    .btn {
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    .search-box {
+      margin: 20px auto;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 250px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 🔹 NAVBAR -->
+  <nav>
+    <a href="dashboard.html">Home</a>
+    <a href="pain.html">Pain</a>
+    <a href="progress.html">Progress</a>
+    <a href="physio.html">Physio</a>
+  </nav>
+
+  <!-- 🔹 TITLE -->
+  <h1>Find Physiotherapists</h1>
+
+  <!-- 🔹 SEARCH -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search by name or location">
+  </div>
+
+  <!-- 🔹 DOCTOR LIST -->
+  <div class="container">
+    <div id="doctorList" class="grid"></div>
+  </div>
+
+  <!-- 🔹 SCRIPT -->
+  <script src="physio.js"></script>
+
+</body>
+</html>

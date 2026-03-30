@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pain Level Checker</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #dbeafe, #93c5fd);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    nav {
+      background: #1e3a8a;
+      padding: 15px;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #1e3a8a;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      margin: 30px auto;
+      width: 350px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #recommendation {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    #exercises {
+      margin-top: 20px;
+    }
+
+    .card {
+      background: #f1f5f9;
+      padding: 12px;
+      margin: 8px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .warning {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 🔹 NAVBAR -->
+  <nav>
+    <a href="dashboard.html">Home</a>
+    <a href="pain.html">Pain</a>
+    <a href="progress.html">Progress</a>
+    <a href="physio.html">Physio</a>
+  </nav>
+
+  <!-- 🔹 TITLE -->
+  <h1>Assess Your Pain Level</h1>
+
+  <!-- 🔹 MAIN BOX -->
+  <div class="container">
+
+    <h2>Pain Level: <span id="painValue">5</span></h2>
+
+    <!-- SLIDER -->
+    <input type="range" id="painRange" min="0" max="10" value="5">
+
+    <!-- RESULT -->
+    <p id="recommendation"></p>
+
+    <!-- WARNING -->
+    <div id="warningBox"></div>
+
+    <!-- EXERCISES -->
+    <div id="exercises"></div>
+
+  </div>
+
+  <!-- 🔹 SCRIPT -->
+  <script src="pain.js"></script>
+
+</body>
+</html>
