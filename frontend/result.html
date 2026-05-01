@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Session Result</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      color: white;
+
+      background: linear-gradient(rgba(30,30,60,0.6), rgba(30,30,60,0.8)),
+        url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+
+<body class="text-center overflow-hidden">
+
+<!-- 🎉 LEVEL POPUP -->
+<div id="levelPopup"
+  class="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+
+  <div class="glass p-10 text-center relative">
+
+    <button onclick="closePopup()"
+      class="absolute top-2 right-4 text-xl">❌</button>
+
+    <h1 class="text-3xl font-bold mb-4">🎉 YAY!</h1>
+    <h2 id="levelText" class="text-xl"></h2>
+    <p class="mt-2">You passed this level 🚀</p>
+
+  </div>
+</div>
+
+<!-- RESULT CONTENT -->
+<div id="resultContent" class="hidden mt-16">
+
+  <h1 class="text-4xl font-bold mb-6">🏆 Session Complete</h1>
+
+  <div class="glass p-8 w-[320px] mx-auto">
+
+    <p>Score</p>
+    <h2 id="score" class="text-4xl font-bold mb-4">0</h2>
+
+    <p>Reps: <span id="reps"></span></p>
+    <p>Accuracy: <span id="accuracy"></span>%</p>
+    <p>Fatigue: <span id="fatigue"></span>%</p>
+
+    <h3 id="feedback" class="mt-4 text-xl"></h3>
+
+  </div>
+
+  <button onclick="goBack()"
+    class="mt-6 bg-green-500 px-6 py-2 rounded">
+    Back to Dashboard
+  </button>
+
+</div>
+
+<script src="result.js"></script>
+
+</body>
+</html>

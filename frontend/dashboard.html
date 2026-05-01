@@ -1,123 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RehabAI Dashboard</title>
+<meta charset="UTF-8">
+<title>RehabAI Dashboard</title>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- AOS Animations -->
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<!-- AOS Animations -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      color: white;
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  color: white;
 
-      /* 🌿 NEW AESTHETIC BACKGROUND */
-      background: linear-gradient(rgba(30,30,60,0.6), rgba(30,30,60,0.8)),
-        url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
+  /* 🌿 AESTHETIC BACKGROUND */
+  background: linear-gradient(rgba(30,30,60,0.6), rgba(30,30,60,0.8)),
+    url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
 
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-    }
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
 
-    .section {
-      padding: 100px 20px;
-    }
+.section {
+  padding: 100px 20px;
+}
 
-    /* Soft glow effect */
-    .glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-  </style>
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+</style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="fixed w-full top-0 z-50 bg-black/30 backdrop-blur-lg flex justify-between px-8 py-4">
-    <h1 class="text-xl font-bold">🧘 RehabAI</h1>
+<!-- NAVBAR -->
+<nav class="fixed w-full top-0 z-50 bg-black/30 backdrop-blur-lg flex justify-between px-8 py-4">
+  <h1 class="text-xl font-bold">🧘 RehabAI</h1>
 
-    <div class="flex gap-6 text-sm">
-      <a href="dashboard.html" class="hover:text-purple-300">Dashboard</a>
-      <a href="pain.html" class="hover:text-purple-300">Pain</a>
-      <a href="physio.html" class="hover:text-purple-300">Physio</a>
-      <a href="progress.html" class="hover:text-purple-300">Progress</a>
-    </div>
-  </nav>
+  <div class="flex gap-6 text-sm">
+    <a href="dashboard.html" class="hover:text-purple-300">Dashboard</a>
+    <a href="pain.html" class="hover:text-purple-300">Pain</a>
+    <a href="physio.html" class="hover:text-purple-300">Physio</a>
+    <a href="progress.html" class="hover:text-purple-300">Progress</a>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <section class="section text-center mt-16">
+<!-- HERO -->
+<section class="section text-center mt-16">
 
-    <h1 class="text-5xl font-bold mb-6" data-aos="fade-up">
-      Heal Smarter with AI
-    </h1>
+  <h1 class="text-5xl font-bold mb-6" data-aos="fade-up">
+    Heal Smarter with AI
+  </h1>
 
-    <p class="opacity-80 max-w-xl mx-auto mb-6" data-aos="fade-up" data-aos-delay="200">
-      Personalized rehabilitation powered by intelligent motion tracking.
-    </p>
+  <p class="opacity-80 max-w-xl mx-auto mb-6"
+     data-aos="fade-up"
+     data-aos-delay="200">
+    Personalized rehabilitation powered by intelligent motion tracking.
+  </p>
 
-    <!-- STREAK -->
-    <div class="glass px-6 py-3 inline-block shadow-xl" data-aos="zoom-in">
-      🔥 Streak: <span id="streak">0</span> days
-    </div>
+  <!-- STREAK -->
+  <div class="glass px-6 py-3 inline-block shadow-xl" data-aos="zoom-in">
+    🔥 Streak: <span id="streak">0</span> days
+  </div>
 
-  </section>
+</section>
 
-  <!-- EXERCISES -->
-  <section class="section">
+<!-- EXERCISES -->
+<section class="section">
 
-    <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">
-      Your Exercises
-    </h2>
+  <h2 class="text-4xl font-bold text-center mb-6" data-aos="fade-up">
+    Your Exercises
+  </h2>
 
-    <div id="exerciseList"
-         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
+  <!-- 🔥 GOAL SELECT (ADDED ONLY THIS) -->
+  <div class="text-center mb-10" data-aos="fade-up">
+    <select id="goalSelect"
+      class="px-4 py-2 rounded-lg bg-white/20 backdrop-blur text-white border border-white/30 focus:outline-none">
+      
+      <option value="all">All</option>
+      <option value="knee">Knee Rehab</option>
+      <option value="shoulder">Shoulder Rehab</option>
+      <option value="general">General Fitness</option>
 
-    </div>
+    </select>
+  </div>
 
-  </section>
+  <div id="exerciseList"
+       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
+  </div>
 
-  <!-- EXTRA SECTION -->
-  <section class="section text-center">
+</section>
 
-    <h2 class="text-4xl font-bold mb-6" data-aos="fade-up">
-      Move. Recover. Thrive.
-    </h2>
+<!-- EXTRA SECTION -->
+<section class="section text-center">
 
-    <p class="opacity-70 max-w-xl mx-auto mb-10" data-aos="fade-up">
-      RehabAI guides your recovery journey with precision and care.
-    </p>
+  <h2 class="text-4xl font-bold mb-6" data-aos="fade-up">
+    Move. Recover. Thrive.
+  </h2>
 
-    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
-         class="rounded-2xl mx-auto shadow-2xl w-[350px]"
-         data-aos="zoom-in" />
+  <p class="opacity-70 max-w-xl mx-auto mb-10" data-aos="fade-up">
+    RehabAI guides your recovery journey with precision and care.
+  </p>
 
-  </section>
+  <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+       class="rounded-2xl mx-auto shadow-2xl w-[350px]"
+       data-aos="zoom-in" />
 
-  <!-- FOOTER -->
-  <footer class="text-center py-10 opacity-60 text-sm">
-    © 2026 RehabAI — AI Rehabilitation Platform
-  </footer>
+</section>
 
-  <!-- JS -->
-  <script src="dashboard.js"></script>
+<!-- FOOTER -->
+<footer class="text-center py-10 opacity-60 text-sm">
+  © 2026 RehabAI — AI Rehabilitation Platform
+</footer>
 
-  <!-- AOS -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script>
-    AOS.init({
-      duration: 1000,
-      once: true
-    });
-  </script>
+<!-- JS -->
+<script src="dashboard.js"></script>
+
+<!-- AOS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({
+  duration: 1000,
+  once: true
+});
+</script>
 
 </body>
 </html>

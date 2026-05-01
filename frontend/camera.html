@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>RehabAI Camera</title>
-
+  <title>Live Exercise Tracking</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -11,61 +9,81 @@
       margin: 0;
       font-family: sans-serif;
       color: white;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      text-align: center;
+
+      background: linear-gradient(rgba(30,30,60,0.6), rgba(30,30,60,0.8)),
+        url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
 
-    video, canvas {
-      border-radius: 10px;
+    .glass {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
     }
   </style>
 </head>
 
-<body>
+<body class="text-center">
 
-  <h1 class="text-3xl mt-6 mb-4">🧠 Live Exercise Tracking</h1>
+<h1 class="text-3xl font-bold mt-6 mb-4">🧠 Live Exercise Tracking</h1>
 
-  <!-- CAMERA -->
-  <div class="flex justify-center relative">
-    <video id="video" width="640" height="480" autoplay muted></video>
-    <canvas id="output" width="640" height="480" class="absolute"></canvas>
+<!-- CAMERA -->
+<div class="flex justify-center">
+  <video id="video" autoplay playsinline class="rounded-xl"></video>
+  <canvas id="output" class="absolute"></canvas>
+</div>
+
+<!-- METRICS -->
+<div class="flex justify-center gap-6 mt-6">
+
+  <div class="glass p-4">
+    Reps <br><span id="reps">0</span>
   </div>
 
-  <!-- METRICS -->
-  <div class="flex justify-center gap-6 mt-6">
-    <div>
-      <p>Reps</p>
-      <p id="reps">0</p>
-    </div>
-
-    <div>
-      <p>Accuracy</p>
-      <p id="accuracy">0%</p>
-    </div>
-
-    <div>
-      <p>Stage</p>
-      <p id="stage">-</p>
-    </div>
+  <div class="glass p-4">
+    Accuracy <br><span id="accuracy">0%</span>
   </div>
 
-  <!-- AI MESSAGE -->
-  <div class="mt-6">
-    <p id="aiMessage">AI analyzing...</p>
+  <div class="glass p-4">
+    Stage <br><span id="stage">-</span>
   </div>
 
-  <!-- BUTTONS -->
-  <div class="mt-6">
-    <button id="startBtn" class="bg-green-500 px-4 py-2 rounded">Start</button>
-    <button id="stopBtn" class="bg-red-500 px-4 py-2 rounded ml-4">Stop</button>
+  <div class="glass p-4">
+    Fatigue <br><span id="fatigue">0%</span>
   </div>
 
-  <!-- MEDIAPIPE -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <div class="glass p-4">
+    Score <br><span id="score">0</span>
+  </div>
 
-  <!-- YOUR SCRIPT -->
-  <script src="camera.js"></script>
+</div>
+
+<!-- FATIGUE BAR -->
+<div class="w-1/2 mx-auto mt-4 bg-gray-700 rounded-full">
+  <div id="fatigueBar" class="bg-red-500 h-3 rounded-full w-0"></div>
+</div>
+
+<!-- MESSAGE -->
+<p id="aiMessage" class="mt-4 text-lg"></p>
+
+<!-- BUTTONS -->
+<div class="mt-6">
+  <button id="startBtn" class="bg-green-500 px-4 py-2 rounded">Start</button>
+  <button id="stopBtn" class="bg-red-500 px-4 py-2 rounded">Stop</button>
+  <button onclick="toggleVoice()" class="bg-gray-600 px-4 py-2 rounded ml-2">
+    🔊 Voice
+  </button>
+</div>
+
+<!-- MEDIAPIPE -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script src="camera.js"></script>
 
 </body>
 </html>

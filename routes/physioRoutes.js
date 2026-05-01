@@ -1,6 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const Doctor = require("../models/doctors");
+// Dummy physiotherapist data
+const physios = [
+  {
+    name: "Dr. Riya Sharma",
+    specialization: "Knee Rehab",
+    location: "Delhi",
+    experience: 5
+  },
+  {
+    name: "Dr. Aman Verma",
+    specialization: "Shoulder Therapy",
+    location: "Mumbai",
+    experience: 7
+  },
+  {
+    name: "Dr. Neha Gupta",
+    specialization: "Sports Injury",
+    location: "Bangalore",
+    experience: 6
+  },
+  {
+    name: "Dr. Rahul Mehta",
+    specialization: "Post Surgery Rehab",
+    location: "Pune",
+    experience: 8
+  }
+];
 
 // 🔹 GET all doctors
 router.get("/", async (req, res) => {

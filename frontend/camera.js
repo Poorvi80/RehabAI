@@ -9,6 +9,9 @@ const repsEl = document.getElementById("reps");
 const accuracyEl = document.getElementById("accuracy");
 const stageEl = document.getElementById("stage");
 const aiMessage = document.getElementById("aiMessage");
+const fatigueEl = document.getElementById("fatigue");
+const fatigueBar = document.getElementById("fatigueBar");
+const scoreEl = document.getElementById("score");
 
 // ==========================
 // VARIABLES
@@ -17,13 +20,38 @@ let reps = 0;
 let stage = null;
 let accuracy = 100;
 
-let lastAccuracy = 100;
-let fatigueCount = 0;
+let accuracyHistory = [];
+let fatigueScore = 0;
+let sessionScore = 0;
 
 let cameraInstance = null;
 
+// 🔊 VOICE
+let lastSpoken = "";
+let speechEnabled = true;
+
 // ==========================
-// ANGLE FUNCTION
+// VOICE FUNCTION
+// ==========================
+function speak(text) {
+  if (!speechEnabled || text === lastSpoken) return;
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.rate = 1;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(speech);
+
+  lastSpoken = text;
+}
+
+function toggleVoice() {
+  speechEnabled = !speechEnabled;
+  alert(speechEnabled ? "Voice ON" : "Voice OFF");
+}
+
+// ==========================
+// ANGLE
 // ==========================
 function calculateAngle(a, b, c) {
   const radians =
@@ -37,11 +65,82 @@ function calculateAngle(a, b, c) {
 }
 
 // ==========================
-// MEDIAPIPE SETUP
+// FATIGUE
+// ==========================
+function checkFatigue(currentAccuracy) {
+  accuracyHistory.push(currentAccuracy);
+
+  if (accuracyHistory.length > 8) accuracyHistory.shift();
+  if (accuracyHistory.length < 5) return false;
+
+  let drops = 0;
+  for (let i = 1; i < accuracyHistory.length; i++) {
+    if (accuracyHistory[i] < accuracyHistory[i - 1] - 5) drops++;
+  }
+
+  return drops >= 3;
+}
+
+// ==========================
+// SCORE
+// ==========================
+function calculateScore() {
+  let accScore = accuracy;
+  let repScore = Math.min(reps * 5, 100);
+  let fatiguePenalty = fatigueScore;
+
+  sessionScore = Math.round(
+    accScore * 0.5 +
+    repScore * 0.3 +
+    (100 - fatiguePenalty) * 0.2
+  );
+}
+
+function getScoreFeedback(score) {
+  if (score > 85) return "🏆 Excellent!";
+  if (score > 70) return "🔥 Great job!";
+  if (score > 50) return "👍 Good effort!";
+  return "⚠️ Needs improvement";
+}
+
+// ==========================
+// SKELETON
+// ==========================
+function drawSkeleton(ctx, lm) {
+  const connections = [
+    [11,13],[13,15],
+    [12,14],[14,16],
+    [11,12],
+    [11,23],[12,24],
+    [23,24],
+    [23,25],[25,27],
+    [24,26],[26,28]
+  ];
+
+  ctx.strokeStyle = "#00FFAA";
+  ctx.lineWidth = 3;
+
+  connections.forEach(([i, j]) => {
+    ctx.beginPath();
+    ctx.moveTo(lm[i].x * canvas.width, lm[i].y * canvas.height);
+    ctx.lineTo(lm[j].x * canvas.width, lm[j].y * canvas.height);
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = "#FF3B3B";
+  lm.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x * canvas.width, p.y * canvas.height, 5, 0, 2 * Math.PI);
+    ctx.fill();
+  });
+}
+
+// ==========================
+// MEDIAPIPE
 // ==========================
 const pose = new Pose({
-  locateFile: (file) =>
-    `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+  locateFile: file =>
+    `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
 });
 
 pose.setOptions({
@@ -52,7 +151,7 @@ pose.setOptions({
 });
 
 // ==========================
-// RESULTS
+// MAIN LOOP
 // ==========================
 pose.onResults((results) => {
   if (!results.poseLandmarks) return;
@@ -61,50 +160,51 @@ pose.onResults((results) => {
   ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
   const lm = results.poseLandmarks;
+  drawSkeleton(ctx, lm);
 
-  const shoulder = lm[11];
-  const elbow = lm[13];
-  const wrist = lm[15];
+  const angle = calculateAngle(lm[11], lm[13], lm[15]);
 
-  const angle = calculateAngle(shoulder, elbow, wrist);
-
-  // REPS
   if (angle > 150) stage = "down";
   if (angle < 60 && stage === "down") {
     stage = "up";
     reps++;
   }
 
-  // ACCURACY
   accuracy = Math.max(0, Math.min(100, 100 - Math.abs(angle - 90)));
 
   // FATIGUE
-  if (accuracy < lastAccuracy - 10) {
-    fatigueCount++;
-  } else {
-    fatigueCount = 0;
-  }
-  lastAccuracy = accuracy;
+  fatigueScore += checkFatigue(accuracy) ? 5 : -2;
+  fatigueScore = Math.max(0, Math.min(100, fatigueScore));
 
-  // AI MESSAGE
-  if (fatigueCount >= 3) {
-    aiMessage.innerText = "😣 You're getting tired!";
+  // SCORE
+  calculateScore();
+
+  // MESSAGE
+  let message = "";
+
+  if (fatigueScore > 60) {
+    message = "You are very tired. Take a break.";
   } else if (accuracy > 90) {
-    aiMessage.innerText = "🔥 Perfect form!";
-  } else if (accuracy > 70) {
-    aiMessage.innerText = "💪 Good!";
+    message = "Perfect form.";
   } else {
-    aiMessage.innerText = "⚠️ Fix posture!";
+    message = "Keep going.";
   }
+
+  let feedback = getScoreFeedback(sessionScore);
+  aiMessage.innerText = `${message} ${feedback}`;
+  speak(message);
 
   // UPDATE UI
   repsEl.innerText = reps;
   accuracyEl.innerText = Math.round(accuracy) + "%";
   stageEl.innerText = stage || "-";
+  fatigueEl.innerText = fatigueScore + "%";
+  fatigueBar.style.width = fatigueScore + "%";
+  scoreEl.innerText = sessionScore;
 });
 
 // ==========================
-// CAMERA CONTROL
+// CAMERA
 // ==========================
 function startCamera() {
   if (cameraInstance) return;
@@ -124,16 +224,32 @@ function stopCamera() {
   if (!cameraInstance) return;
 
   const stream = video.srcObject;
-  if (stream) {
-    stream.getTracks().forEach((track) => track.stop());
-  }
+  if (stream) stream.getTracks().forEach(t => t.stop());
 
-  video.srcObject = null;
-  cameraInstance = null;
+  // SAVE TO BACKEND
+  fetch("/api/results", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      reps,
+      accuracy,
+      fatigue: fatigueScore,
+      score: sessionScore
+    })
+  });
+
+  // 🔥 STORE RESULT LOCALLY
+  localStorage.setItem("sessionResult", JSON.stringify({
+    reps,
+    accuracy,
+    fatigue: fatigueScore,
+    score: sessionScore
+  }));
+
+  // 🔥 REDIRECT TO RESULT PAGE
+  window.location.href = "result.html";
 }
 
-// ==========================
-// BUTTON EVENTS
-// ==========================
-document.getElementById("startBtn").addEventListener("click", startCamera);
-document.getElementById("stopBtn").addEventListener("click", stopCamera);
+// BUTTONS
+document.getElementById("startBtn").onclick = startCamera;
+document.getElementById("stopBtn").onclick = stopCamera;
