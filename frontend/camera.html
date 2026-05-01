@@ -1,68 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>RehabAI Camera</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     body {
-      font-family: Arial;
-      text-align: center;
-      background: #f5f7fb;
-    }
-
-    h2 {
-      background: #4CAF50;
+      margin: 0;
+      font-family: sans-serif;
       color: white;
-      padding: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      text-align: center;
     }
 
     video, canvas {
       border-radius: 10px;
-      margin-top: 10px;
-    }
-
-    .stats {
-      margin-top: 15px;
-      font-size: 18px;
-    }
-
-    button {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      margin: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #45a049;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>🤖 RehabAI Camera</h2>
+  <h1 class="text-3xl mt-6 mb-4">🧠 Live Exercise Tracking</h1>
 
-  <video id="video" width="500" height="400" autoplay></video>
-  <canvas id="canvas" width="500" height="400"></canvas>
-
-  <div class="stats">
-    <h3 id="repCount">Reps: 0</h3>
-    <h3 id="feedback">Feedback: </h3>
-    <h3 id="accuracy">Accuracy: 0%</h3>
+  <!-- CAMERA -->
+  <div class="flex justify-center relative">
+    <video id="video" width="640" height="480" autoplay muted></video>
+    <canvas id="output" width="640" height="480" class="absolute"></canvas>
   </div>
 
-  <button onclick="startCamera()">Start Camera</button>
-  <button onclick="saveResult()">Save Result</button>
+  <!-- METRICS -->
+  <div class="flex justify-center gap-6 mt-6">
+    <div>
+      <p>Reps</p>
+      <p id="reps">0</p>
+    </div>
 
-  <!-- MediaPipe -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
+    <div>
+      <p>Accuracy</p>
+      <p id="accuracy">0%</p>
+    </div>
 
+    <div>
+      <p>Stage</p>
+      <p id="stage">-</p>
+    </div>
+  </div>
+
+  <!-- AI MESSAGE -->
+  <div class="mt-6">
+    <p id="aiMessage">AI analyzing...</p>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="mt-6">
+    <button id="startBtn" class="bg-green-500 px-4 py-2 rounded">Start</button>
+    <button id="stopBtn" class="bg-red-500 px-4 py-2 rounded ml-4">Stop</button>
+  </div>
+
+  <!-- MEDIAPIPE -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+  <!-- YOUR SCRIPT -->
   <script src="camera.js"></script>
 
 </body>

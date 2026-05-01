@@ -2,120 +2,131 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Physiotherapists</title>
-  <link rel="stylesheet" href="style.css">
+  <title>RehabAI Physio</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background: linear-gradient(to right, #e0f2fe, #bae6fd);
-      text-align: center;
-    }
-
-    nav {
-      background: #1e3a8a;
-      padding: 15px;
-    }
-
-    nav a {
+      font-family: sans-serif;
       color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
+
+      /* SAME BACKGROUND */
+      background: linear-gradient(rgba(20,20,40,0.7), rgba(20,20,40,0.9)),
+        url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
 
-    h1 {
-      margin-top: 30px;
-      color: #1e3a8a;
-    }
-
-    .container {
-      margin: 30px auto;
-      width: 90%;
-      max-width: 900px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
+    .glass {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: transform 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .card h3 {
-      margin: 10px 0;
-      color: #1e40af;
-    }
-
-    .card p {
-      margin: 5px 0;
-      color: #374151;
-    }
-
-    .btn {
-      margin-top: 10px;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 8px;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #1d4ed8;
-    }
-
-    .search-box {
-      margin: 20px auto;
-    }
-
-    input[type="text"] {
-      padding: 10px;
-      width: 250px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- 🔹 NAVBAR -->
-  <nav>
-    <a href="dashboard.html">Home</a>
-    <a href="pain.html">Pain</a>
-    <a href="progress.html">Progress</a>
-    <a href="physio.html">Physio</a>
+  <!-- NAVBAR -->
+  <nav class="flex justify-between px-8 py-5 bg-black/30 backdrop-blur-lg">
+    <h1 class="text-xl font-bold">🏥 RehabAI</h1>
+
+    <div class="flex gap-6">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="pain.html">Pain</a>
+      <a href="physio.html">Physio</a>
+      <a href="progress.html">Progress</a>
+    </div>
   </nav>
 
-  <!-- 🔹 TITLE -->
-  <h1>Find Physiotherapists</h1>
+  <!-- TITLE -->
+  <h1 class="text-4xl text-center mt-10 mb-6">
+    🧑‍⚕️ Find Physiotherapists
+  </h1>
 
-  <!-- 🔹 SEARCH -->
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search by name or location">
+  <!-- SEARCH -->
+  <div class="flex justify-center mb-10">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search by name or location..."
+      class="glass w-[300px] px-4 py-2 text-white outline-none"
+    />
   </div>
 
-  <!-- 🔹 DOCTOR LIST -->
-  <div class="container">
-    <div id="doctorList" class="grid"></div>
+  <!-- DOCTOR LIST -->
+  <div id="doctorList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-10">
+
   </div>
 
-  <!-- 🔹 SCRIPT -->
-  <script src="physio.js"></script>
+  <!-- SCRIPT -->
+  <script>
+    let doctors = [];
+
+    async function fetchDoctors() {
+      try {
+        const res = await fetch("/api/physio");
+        doctors = await res.json();
+        displayDoctors(doctors);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function displayDoctors(data) {
+      const container = document.getElementById("doctorList");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = `
+          <div class="glass text-center col-span-3">
+            ❌ No physiotherapists found
+          </div>
+        `;
+        return;
+      }
+
+      data.forEach(doc => {
+        const card = document.createElement("div");
+
+        card.className =
+          "glass shadow-lg hover:scale-105 transition duration-300";
+
+        card.innerHTML = `
+          <h2 class="text-xl font-bold mb-2">${doc.name}</h2>
+          <p class="opacity-80 mb-1">📍 ${doc.location || "Unknown"}</p>
+          <p class="opacity-80 mb-1">💼 ${doc.specialization || "General"}</p>
+          <p class="opacity-80 mb-3">📞 ${doc.contact || "N/A"}</p>
+
+          <button class="bg-purple-500 px-4 py-2 rounded-lg hover:bg-purple-600">
+            Book Appointment
+          </button>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // 🔍 SEARCH
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      const value = e.target.value.toLowerCase();
+
+      const filtered = doctors.filter(doc =>
+        doc.name.toLowerCase().includes(value) ||
+        (doc.location || "").toLowerCase().includes(value)
+      );
+
+      displayDoctors(filtered);
+    });
+
+    fetchDoctors();
+  </script>
 
 </body>
 </html>

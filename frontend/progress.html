@@ -1,54 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Progress</title>
+  <meta charset="UTF-8">
+  <title>RehabAI Progress</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
-      font-family: Arial;
-      text-align: center;
-      background: #f5f7fb;
+      margin: 0;
+      font-family: sans-serif;
+      color: white;
+
+      /* SAME BACKGROUND AS DASHBOARD */
+      background: linear-gradient(rgba(20,20,40,0.7), rgba(20,20,40,0.9)),
+        url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
 
-    .card {
-      background: white;
-      margin: 10px auto;
-      padding: 15px;
-      width: 300px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .glass {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>📊 Your Progress</h2>
+  <!-- NAVBAR -->
+  <nav class="flex justify-between px-8 py-5 bg-black/30 backdrop-blur-lg">
+    <h1 class="text-xl font-bold">📊 RehabAI</h1>
 
-  <div id="results"></div>
+    <div class="flex gap-6">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="pain.html">Pain</a>
+      <a href="physio.html">Physio</a>
+      <a href="progress.html">Progress</a>
+    </div>
+  </nav>
 
+  <!-- TITLE -->
+  <h1 class="text-4xl text-center mt-10 mb-10">
+    📊 Your Progress
+  </h1>
+
+  <!-- STATS -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-10">
+
+    <div class="glass">
+      <h2>Total Reps</h2>
+      <p id="totalReps" class="text-3xl font-bold">0</p>
+    </div>
+
+    <div class="glass">
+      <h2>Average Accuracy</h2>
+      <p id="avgAccuracy" class="text-3xl font-bold">0%</p>
+    </div>
+
+    <div class="glass">
+      <h2>Sessions</h2>
+      <p id="sessions" class="text-3xl font-bold">0</p>
+    </div>
+
+  </div>
+
+  <!-- GRAPH -->
+  <div class="mt-16 px-10">
+    <div class="glass">
+      <canvas id="progressChart"></canvas>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
   <script>
-    async function loadResults() {
-      const res = await fetch("http://localhost:5000/api/results");
-      const data = await res.json();
+    fetch("/api/results")
+      .then(res => res.json())
+      .then(data => {
 
-      const container = document.getElementById("results");
+        const results = data.results || [];
 
-      data.forEach(r => {
-        const div = document.createElement("div");
-        div.classList.add("card");
+        // Stats
+        let totalReps = 0;
+        let totalAccuracy = 0;
 
-        div.innerHTML = `
-          <h3>${r.exercise}</h3>
-          <p>Reps: ${r.reps}</p>
-          <p>Accuracy: ${r.accuracy}%</p>
-        `;
+        results.forEach(r => {
+          totalReps += r.reps;
+          totalAccuracy += r.accuracy;
+        });
 
-        container.appendChild(div);
+        document.getElementById("totalReps").innerText = totalReps;
+        document.getElementById("sessions").innerText = results.length;
+
+        document.getElementById("avgAccuracy").innerText =
+          results.length ? Math.round(totalAccuracy / results.length) + "%" : "0%";
+
+        // Graph
+        const labels = results.map((_, i) => "Session " + (i + 1));
+        const accuracyData = results.map(r => r.accuracy);
+
+        new Chart(document.getElementById("progressChart"), {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Accuracy",
+              data: accuracyData,
+              borderColor: "#8b5cf6",
+              backgroundColor: "rgba(139,92,246,0.2)",
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+
       });
-    }
-
-    loadResults();
   </script>
 
 </body>

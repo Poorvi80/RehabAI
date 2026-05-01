@@ -1,139 +1,139 @@
-// Elements
-const videoElement = document.getElementById("video");
-const canvasElement = document.getElementById("canvas");
-const canvasCtx = canvasElement.getContext("2d");
+﻿// ==========================
+// ELEMENTS
+// ==========================
+const video = document.getElementById("video");
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
 
-// UI elements
-const repText = document.getElementById("repCount");
-const feedbackText = document.getElementById("feedback");
-const accuracyText = document.getElementById("accuracy");
+const repsEl = document.getElementById("reps");
+const accuracyEl = document.getElementById("accuracy");
+const stageEl = document.getElementById("stage");
+const aiMessage = document.getElementById("aiMessage");
 
-// Exercise name
-const exercise = localStorage.getItem("exercise");
+// ==========================
+// VARIABLES
+// ==========================
+let reps = 0;
+let stage = null;
+let accuracy = 100;
 
-// Counters
-let count = 0;
-let stage = "down";
-let correctReps = 0;
-let totalReps = 0;
+let lastAccuracy = 100;
+let fatigueCount = 0;
 
-// Angle calculation
+let cameraInstance = null;
+
+// ==========================
+// ANGLE FUNCTION
+// ==========================
 function calculateAngle(a, b, c) {
   const radians =
     Math.atan2(c.y - b.y, c.x - b.x) -
     Math.atan2(a.y - b.y, a.x - b.x);
 
-  let angle = Math.abs((radians * 180.0) / Math.PI);
-
+  let angle = Math.abs((radians * 180) / Math.PI);
   if (angle > 180) angle = 360 - angle;
 
   return angle;
 }
 
-// Initialize Pose
+// ==========================
+// MEDIAPIPE SETUP
+// ==========================
 const pose = new Pose({
-  locateFile: (file) => {
-    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-  }
+  locateFile: (file) =>
+    `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
 });
 
 pose.setOptions({
   modelComplexity: 1,
   smoothLandmarks: true,
-  enableSegmentation: false,
   minDetectionConfidence: 0.5,
-  minTrackingConfidence: 0.5
+  minTrackingConfidence: 0.5,
 });
 
-// Pose results
+// ==========================
+// RESULTS
+// ==========================
 pose.onResults((results) => {
-  canvasCtx.save();
-  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+  if (!results.poseLandmarks) return;
 
-  canvasCtx.drawImage(results.image, 0, 0, 500, 400);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
-  if (results.poseLandmarks) {
+  const lm = results.poseLandmarks;
 
-    // Draw skeleton
-    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-      color: "#00FF00",
-      lineWidth: 2
-    });
+  const shoulder = lm[11];
+  const elbow = lm[13];
+  const wrist = lm[15];
 
-    // Draw landmarks
-    drawLandmarks(canvasCtx, results.poseLandmarks, {
-      color: "red",
-      lineWidth: 2
-    });
+  const angle = calculateAngle(shoulder, elbow, wrist);
 
-    // 👉 RIGHT ARM (shoulder-elbow-wrist)
-    const shoulder = results.poseLandmarks[12];
-    const elbow = results.poseLandmarks[14];
-    const wrist = results.poseLandmarks[16];
-
-    const angle = calculateAngle(shoulder, elbow, wrist);
-
-    // DOWN position
-    if (angle < 50) {
-      stage = "down";
-    }
-
-    // UP position → count rep
-    if (angle > 150 && stage === "down") {
-      stage = "up";
-
-      count++;
-      totalReps++;
-
-      repText.innerText = "Reps: " + count;
-
-      // GOOD FORM
-      feedbackText.innerText = "Good rep ✅";
-      correctReps++;
-    }
-
-    // BAD FORM
-    if (angle > 80 && angle < 140) {
-      feedbackText.innerText = "Raise your arm higher ❌";
-    }
-
-    // Accuracy calculation
-    let accuracy = ((correctReps / totalReps) * 100 || 0).toFixed(1);
-    accuracyText.innerText = "Accuracy: " + accuracy + "%";
+  // REPS
+  if (angle > 150) stage = "down";
+  if (angle < 60 && stage === "down") {
+    stage = "up";
+    reps++;
   }
 
-  canvasCtx.restore();
+  // ACCURACY
+  accuracy = Math.max(0, Math.min(100, 100 - Math.abs(angle - 90)));
+
+  // FATIGUE
+  if (accuracy < lastAccuracy - 10) {
+    fatigueCount++;
+  } else {
+    fatigueCount = 0;
+  }
+  lastAccuracy = accuracy;
+
+  // AI MESSAGE
+  if (fatigueCount >= 3) {
+    aiMessage.innerText = "😣 You're getting tired!";
+  } else if (accuracy > 90) {
+    aiMessage.innerText = "🔥 Perfect form!";
+  } else if (accuracy > 70) {
+    aiMessage.innerText = "💪 Good!";
+  } else {
+    aiMessage.innerText = "⚠️ Fix posture!";
+  }
+
+  // UPDATE UI
+  repsEl.innerText = reps;
+  accuracyEl.innerText = Math.round(accuracy) + "%";
+  stageEl.innerText = stage || "-";
 });
 
-// Camera setup
-const camera = new Camera(videoElement, {
-  onFrame: async () => {
-    await pose.send({ image: videoElement });
-  },
-  width: 500,
-  height: 400
-});
-
-// Start camera
+// ==========================
+// CAMERA CONTROL
+// ==========================
 function startCamera() {
-  camera.start();
-}
+  if (cameraInstance) return;
 
-// 🔥 Save Result Function
-async function saveResult() {
-  const accuracy = ((correctReps / totalReps) * 100 || 0).toFixed(1);
-
-  await fetch("http://localhost:5000/api/results", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
+  cameraInstance = new Camera(video, {
+    onFrame: async () => {
+      await pose.send({ image: video });
     },
-    body: JSON.stringify({
-      exercise: exercise,
-      reps: count,
-      accuracy: accuracy
-    })
+    width: 640,
+    height: 480,
   });
 
-  alert("Result Saved ✅");
+  cameraInstance.start();
 }
+
+function stopCamera() {
+  if (!cameraInstance) return;
+
+  const stream = video.srcObject;
+  if (stream) {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+
+  video.srcObject = null;
+  cameraInstance = null;
+}
+
+// ==========================
+// BUTTON EVENTS
+// ==========================
+document.getElementById("startBtn").addEventListener("click", startCamera);
+document.getElementById("stopBtn").addEventListener("click", stopCamera);
