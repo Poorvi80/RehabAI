@@ -1,50 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RehabAI</title>
+<meta charset="UTF-8">
+<title>RehabAI</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      color: white;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-    }
-  </style>
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+
+  /* SAME BACKGROUND AS OTHER PAGES */
+  background: linear-gradient(rgba(30,30,60,0.6), rgba(30,30,60,0.85)),
+    url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b");
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Glass Navbar */
+.navbar {
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* Button glow */
+.glow-btn {
+  transition: all 0.3s ease;
+}
+.glow-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(168,85,247,0.6);
+}
+
+/* Fade animation */
+.fade-in {
+  animation: fadeUp 1s ease forwards;
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="flex justify-between px-8 py-5 bg-black/30 backdrop-blur-lg">
-    <h1 class="text-xl font-bold">🧠 RehabAI</h1>
+<!-- NAVBAR -->
+<nav class="navbar fixed w-full top-0 z-50 flex justify-between px-8 py-4">
+  <h1 class="text-xl font-semibold tracking-wide">🧠 RehabAI</h1>
 
-    <div class="flex gap-6">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="progress.html">Progress</a>
-    </div>
-  </nav>
+  <div class="flex gap-6 text-sm">
+    <a href="dashboard.html" class="hover:text-purple-300">Dashboard</a>
+    <a href="progress.html" class="hover:text-purple-300">Progress</a>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <section class="flex flex-col items-center justify-center text-center h-screen px-6">
+<!-- HERO -->
+<section class="h-screen flex flex-col justify-center items-center text-center px-6">
 
-    <h1 class="text-5xl font-bold mb-4">
-      AI-Powered Rehab Coaching
-    </h1>
+  <h1 class="text-5xl md:text-6xl font-bold mb-6 fade-in leading-tight">
+    AI-Powered <span class="text-purple-300">Rehab Coaching</span>
+  </h1>
 
-    <p class="max-w-xl opacity-80 mb-8">
-      Smart posture tracking, recovery guidance, and progress monitoring.
-    </p>
+  <p class="max-w-xl text-lg opacity-80 mb-8 fade-in" style="animation-delay: 0.2s;">
+    Smart posture tracking, real-time feedback, fatigue detection, and
+    intelligent recovery guidance — all in one platform.
+  </p>
 
-    <a href="dashboard.html"
-       class="bg-white text-black px-8 py-3 rounded-full font-semibold hover:scale-110 transition">
-      🚀 Get Started
-    </a>
+  <button onclick="goDashboard()"
+    class="glow-btn bg-white text-black px-8 py-3 rounded-full font-semibold fade-in"
+    style="animation-delay: 0.4s;">
+    🚀 Get Started
+  </button>
 
-  </section>
+</section>
+
+<script>
+function goDashboard() {
+  window.location.href = "dashboard.html";
+}
+</script>
 
 </body>
 </html>
